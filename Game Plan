@@ -1,0 +1,21 @@
+
+ 1. Go to Indeed Job Search page for Indeed Resumes
+ 2. Get all Links that open a Job Application
+        Open it in a new tab
+ 3. Fill out all normal fields like
+    Address, Name, Answers to basic questions like:
+        What is your experience using Java?*
+        What is your experience using Selenium?*
+        How many years experience with X
+        Are you eligible to work in US
+
+
+ Things to remember:
+    All required fields must be filled
+    Need to know status and title of each page to ensure compliance
+    Not a Single Job application can be filled out sloppily or inaccurately
+    Database to keep track of everything and to enable quick sorting / analysis by user (me)
+    Need to have a way to handle stalled job applications
+        Mark these apps in DB as incomplete and manually complete them
+    Mention the fact that the app was completed using Selenium
+        Link the github
