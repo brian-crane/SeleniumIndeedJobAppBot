@@ -2,6 +2,7 @@ import time
 
 from selenium import webdriver
 from selenium.common.exceptions import StaleElementReferenceException
+from selenium.webdriver import Keys
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
@@ -12,6 +13,7 @@ options.add_argument("user-data-dir=C:/Users/brian/AppData/Local/Google/Chrome/U
 driver = webdriver.Chrome(executable_path='C:/Users/brian/Downloads/chromedriver.exe', chrome_options=options)
 time.sleep(1)
 debug = True
+
 
 class Tools:
 
@@ -34,13 +36,32 @@ class Tools:
         driver.find_element(By.XPATH, "//button[@id='']").click()
 
     def click_continue_button(self):
-        driver.find_element(By.XPATH, "//div[@id='ia-container']/div/div/div/main/div[2]/div[2]/div/div/div[2]/div/button/span").click()
+        driver.find_element(By.XPATH,
+                            "//div[@id='ia-container']/div/div/div/main/div[2]/div[2]/div/div/div[2]/div/button/span").click()
 
-    def get_all_buttons(self):
-        driver.find_element(By.XPATH, "//input[@type='number']").send_keys("4")
-
-        butts = driver.find_elements(By.XPATH, ".//form//input[@type='button']")
-        return butts
+    def answer_questions(self):
+        text = driver.find_element(By.XPATH, "/html/body").text
+        if "Questions from the employer" in text:
+            q_list = text.lower().split("\n")
+            answers = []
+            for line in q_list:
+                if all(x in line for x in ["years", "experience"]):
+                    if any(x in line for x in ["quality", "assurance", "qa", "automated",
+                                               "java","jira","sql","agile","jenkins",
+                                               "junit","testng"]):
+                        answers.append("5")
+                    elif any(x in line for x in ["python","flask"]):
+                        answers.append("2")
+            i = 0
+            for text in driver.find_elements(By.XPATH, "//input[@type='number']"):
+                text.click()
+                text.send_keys(Keys.BACKSPACE)
+                text.send_keys(answers[i])
+                i += 1
+        else:
+            return -1
+        self.click_continue_button()
+        self.answer_questions()
 
     def get_all_links(self):
         links = []
