@@ -4,16 +4,23 @@ from selenium.webdriver import Keys
 
 from Tools import Tools
 
-myTools = Tools()
-myTools.go_to("indeed.com")
+driver = Tools()
+driver.get("https://www.indeed.com/?from=gnav-homepage")
+time.sleep(3)
 
-searchBar = myTools.get_element_by_id("text-input-what")
-searchBar.click()
-searchBar.send_keys("QA Engineer")
-searchBar.send_keys(Keys.ENTER)
+links = driver.get_all_links()
+urls = []
+for link in links:
+    urls.append(link.get_attribute("href"))
+for url in urls:
+    driver.get(url)
+    driver.click_apply_button()
+    time.sleep(1)
+    driver.click_continue_button()
+    butts = driver.get_all_buttons()
+    driver.click_continue_button()
 
-time.sleep(5)
 
-myTools.kill()
+time.sleep(30)
 
-print("Goodbye")
+driver.kill()
