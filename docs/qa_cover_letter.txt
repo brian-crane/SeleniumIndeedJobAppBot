@@ -1,0 +1,9 @@
+Hello, my name is Brian Crane and I very much appreciate you reading this cover letter.  I understand only a few companies take the time to do this but I know your company is one of them.
+
+I am a Professional Software Developer and Automated QA Engineer with a wide array of relevant experience I can bring to the table and am looking for a new opportunity to challenge and grow my skillset.  My expertise is in crafting and maintaining automated test suites using the philosophy of Continuous Integration and Test Driven Development.  I prefer working in an Agile environment with team members I can trust and communicate effectively with and I pride myself on my communication skills, curiosity, and my ability to be a quick learner.  This will allow me to hit the ground running on existing projects and satisfy my desire to constantly learn on the job.
+
+I am most familiar with Java and Python but have experience coding in Swift as well - I am also very passionate about networking tools such as RESTful and continuous Integration tools such as Jenkins.  I have extensive experience in Unit Testing, Load Testing, and Web Testing via Selenium and Robot Framework.  It is my goal and desire to automate QA in such a way as to reveal bugs to developers early and often and to achieve 100% coverage before code is deployed.  QA is the last line of defense in the Software Development world and I take that very seriously in my job.
+
+Thank you very much for reading and do not hesitate to reach out if you have any questions,
+-Brian Crane
+briancrane@gmail.com

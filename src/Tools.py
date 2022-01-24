@@ -2,12 +2,14 @@ import time
 
 from selenium import webdriver
 from selenium.common.exceptions import StaleElementReferenceException
-from selenium.webdriver import Keys
+from selenium.webdriver import Keys, ActionChains
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import pyperclip
 
+delay = 2
 options = Options()
 options.add_argument("user-data-dir=C:/Users/brian/AppData/Local/Google/Chrome/User Data - Copy")
 driver = webdriver.Chrome(executable_path='C:/Users/brian/Downloads/chromedriver.exe', chrome_options=options)
@@ -38,26 +40,85 @@ class Tools:
     def click_continue_button(self):
         driver.find_element(By.XPATH,
                             "//div[@id='ia-container']/div/div/div/main/div[2]/div[2]/div/div/div[2]/div/button/span").click()
+        time.sleep(delay)
+
+    def read_file(self,fn):
+        text_file = open("C:/Users/brian/IdeaProjects/SeleniumIndeedJobAppBot1/docs/"+fn, "r")
+        data = text_file.read()
+        text_file.close()
+        return data
+
+    def handle_error(self, e):
+        print(str(e).replace("\n","..."))
+        time.sleep(delay)
+        driver.execute_script("window.open('');")
+        time.sleep(delay)
+        driver.switch_to.window(driver.window_handles[1])
+        time.sleep(delay)
+
+
+    def string_to_clipboard(self, text):
+        pyperclip.copy(text)
+
+    def write_file(self,fn,text):
+        text_file = open("sample.txt", "w")
+        n = text_file.write('Welcome to pythonexamples.org')
+        text_file.close()
+
+    def cover_letter_and_recs(self):
+        time.sleep(delay)
+        driver.find_element(By.XPATH,"//div[@id='write-cover-letter-selection-card']/div[2]/span").click()
+        cover_letter_text = driver.find_element(By.ID,"coverletter-textarea")
+        cover_letter_text.click()
+        cover_letter_text.send_keys(Keys.CONTROL+"A")
+        cover_letter_text.send_keys(Keys.BACKSPACE)
+        letter = self.read_file("qa_cover_letter.txt")
+        self.string_to_clipboard(letter)
+        cover_letter_text.send_keys(Keys.CONTROL+"V")
+
+        additional_docs = driver.find_element(By.ID,"additionalDocuments")
+        additional_docs.send_keys("C:/Users/Brian/Downloads/Letters of Recommendation - Brian Crane.pdf")
+        time.sleep(delay)
+        self.click_continue_button()
+
+    def if_page_contains(self, text):
+        time.sleep(delay)
+        body = driver.find_element(By.XPATH, "/html/body").text.lower()
+        if text.lower() in body:
+            return True
+        return False
 
     def answer_questions(self):
-        text = driver.find_element(By.XPATH, "/html/body").text
-        if "Questions from the employer" in text:
-            q_list = text.lower().split("\n")
+        time.sleep(delay)
+        text = driver.find_element(By.XPATH, "/html/body").text.lower()
+        if "questions from" in text:
+            q_list = text.split("\n")
             answers = []
             for line in q_list:
                 if all(x in line for x in ["years", "experience"]):
                     if any(x in line for x in ["quality", "assurance", "qa", "automated",
                                                "java","jira","sql","agile","jenkins",
-                                               "junit","testng"]):
+                                               "junit","testng","test automation"]):
                         answers.append("5")
-                    elif any(x in line for x in ["python","flask"]):
+                    elif any(x in line for x in ["python","flask","selenium"]):
                         answers.append("2")
             i = 0
-            for text in driver.find_elements(By.XPATH, "//input[@type='number']"):
+            for number in driver.find_elements(By.XPATH, "//input[@type='number']"):
+                number.click()
+                number.send_keys(Keys.BACKSPACE)
+                number.send_keys(answers[i])
+                i += 1
+            answers = []
+            for line in q_list: #Long form questions
+                if any(x in line for x in ["Please list 2-3 dates"]):
+                    answers.append("Monday or Wednesdays I am available at any time of day.")
+            i = 0
+            for text in driver.find_elements(By.XPATH, "//input[@type='text']"):
                 text.click()
                 text.send_keys(Keys.BACKSPACE)
                 text.send_keys(answers[i])
                 i += 1
+
         else:
             return -1
         self.click_continue_button()
