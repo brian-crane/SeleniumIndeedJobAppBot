@@ -15,7 +15,7 @@ options.add_argument("user-data-dir=C:/Users/brian/AppData/Local/Google/Chrome/U
 driver = webdriver.Chrome(executable_path='C:/Users/brian/Downloads/chromedriver.exe', chrome_options=options)
 time.sleep(1)
 debug = True
-
+deadPostCount = 0
 
 class Tools:
 
@@ -49,11 +49,12 @@ class Tools:
         return data
 
     def handle_error(self, e):
+        self.deadPostCount+=1
         print(str(e).replace("\n","..."))
         time.sleep(delay)
         driver.execute_script("window.open('');")
         time.sleep(delay)
-        driver.switch_to.window(driver.window_handles[1])
+        driver.switch_to.window(driver.window_handles[self.deadPostCount])
         time.sleep(delay)
 
 
@@ -81,6 +82,11 @@ class Tools:
         time.sleep(delay)
         self.click_continue_button()
 
+    def if_url_contains(self, text):
+        if text in str(driver.current_url):
+            return True
+        return False
+
     def if_page_contains(self, text):
         time.sleep(delay)
         body = driver.find_element(By.XPATH, "/html/body").text.lower()
@@ -91,14 +97,17 @@ class Tools:
     def answer_questions(self):
         time.sleep(delay)
         text = driver.find_element(By.XPATH, "/html/body").text.lower()
-        if "questions from" in text:
+        if "answer this question to continue" in text:
+            time.sleep(20)
+        elif "questions from" in text:
             q_list = text.split("\n")
             answers = []
             for line in q_list:
                 if all(x in line for x in ["years", "experience"]):
                     if any(x in line for x in ["quality", "assurance", "qa", "automated",
                                                "java","jira","sql","agile","jenkins",
-                                               "junit","testng","test automation"]):
+                                               "junit","testng","test automation",
+                                               "rest"]):
                         answers.append("5")
                     elif any(x in line for x in ["python","flask","selenium"]):
                         answers.append("2")
@@ -110,15 +119,18 @@ class Tools:
                 i += 1
             answers = []
             for line in q_list: #Long form questions
-                if any(x in line for x in ["Please list 2-3 dates"]):
+                if any(x in line for x in ["please list 2-3 dates"]):
                     answers.append("Monday or Wednesdays I am available at any time of day.")
             i = 0
-            for text in driver.find_elements(By.XPATH, "//input[@type='text']"):
+            #Text answers
+            for text in driver.find_elements(By.TAG_NAME,"textarea"):
                 text.click()
                 text.send_keys(Keys.BACKSPACE)
                 text.send_keys(answers[i])
                 i += 1
-
+            #Radio Button questions
+            for butt in driver.find_elements(By.XPATH,"//fieldset[@id='input-q_5592f8d2511291e8a7cb1b476b984e4f']/label[2]/span"):
+                butt.click()
         else:
             return -1
         self.click_continue_button()
