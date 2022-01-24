@@ -7,3 +7,7 @@ I am most familiar with Java and Python but have experience coding in Swift as w
 Thank you very much for reading and do not hesitate to reach out if you have any questions,
 -Brian Crane
 briancrane@gmail.com
+
+
+This Job Application was generated using my Selenium automated script, follow development here:
+https://github.com/brian-crane/SeleniumIndeedJobAppBot
