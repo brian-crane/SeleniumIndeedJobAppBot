@@ -1,3 +1,5 @@
+import os
+import sys
 import time
 
 from selenium import webdriver
@@ -9,7 +11,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import pyperclip
 
-delay = 0.5
+delay = 5
 options = Options()
 options.add_argument("user-data-dir=C:/Users/brian/AppData/Local/Google/Chrome/User Data - Copy")
 driver = webdriver.Chrome(executable_path='C:/Users/brian/Downloads/chromedriver.exe', chrome_options=options)
@@ -50,14 +52,22 @@ class Tools:
 
     def url(self):
         return driver.current_url
-    def get_all_urls(self, term):
+    def get_all_urls(self, term,pages_from,pages_to,age):
         urls = []
-        for i in range(0,10):
-            driver.get("https://www.indeed.com/jobs?q="+term.replace(" ","%20")+"&l=Sunnyvale%2C%20CA&fromage=14&start="+str(i*10))
+        for i in range(pages_from,pages_to):
+            url = "https://www.indeed.com/"
+            #url = "https://www.indeed.com/jobs?q="+term.replace(" ","%20")+"&l=Sunnyvale%2C%20CA&fromage="+str(age)+"&start="+str(i*10)
+            print("Job List: " + url)
+            driver.get(url)
             time.sleep(delay)
             links = self.get_all_links()
             for link in links:
-                urls.append(link.get_attribute("href"))
+                if link.get_attribute("href") not in urls:
+                    url = link.get_attribute("href")
+                    print("Getting "+url[20:])
+                    urls.append(url)
+                else:
+                    print("Duplicate URL found: " + str(link.get_attribute("href")))
         return urls
 
     def click_continue_button(self):
@@ -95,19 +105,23 @@ class Tools:
 
         if self.if_url_contains("documents"):
             time.sleep(delay)
-            driver.find_element(By.XPATH,"//div[@id='write-cover-letter-selection-card']/div[2]/span").click()
-            cover_letter_text = driver.find_element(By.ID,"coverletter-textarea")
-            cover_letter_text.click()
-            cover_letter_text.send_keys(Keys.CONTROL+"A")
-            cover_letter_text.send_keys(Keys.BACKSPACE)
-            letter = self.read_file("qa_cover_letter.txt")
-            self.string_to_clipboard(letter)
-            cover_letter_text.send_keys(Keys.CONTROL+"V")
-            if "additional documents" in text:
-                additional_docs = driver.find_element(By.ID,"additionalDocuments")
-                additional_docs.send_keys("C:/Users/Brian/Downloads/Letters of Recommendation - Brian Crane.pdf")
-                time.sleep(delay)
-        time.sleep(3)
+            try:
+                driver.find_element(By.XPATH,"//div[@id='write-cover-letter-selection-card']/div[2]/span").click()
+                cover_letter_text = driver.find_element(By.ID,"coverletter-textarea")
+                cover_letter_text.click()
+                cover_letter_text.send_keys(Keys.CONTROL+"A")
+                cover_letter_text.send_keys(Keys.BACKSPACE)
+                letter = self.read_file("qa_cover_letter.txt")
+                self.string_to_clipboard(letter)
+                cover_letter_text.send_keys(Keys.CONTROL+"V")
+                if "additional documents" in text:
+                    additional_docs = driver.find_element(By.ID,"additionalDocuments")
+                    additional_docs.send_keys("C:/Users/Brian/Downloads/Letters of Recommendation - Brian Crane.pdf")
+                    time.sleep(delay)
+            except Exception as e:
+                exc_type, exc_obj, exc_tb = sys.exc_info()
+                fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+                print(exc_type, fname, exc_tb.tb_lineno)
         self.hit_apply()
 
     def if_url_contains(self, text):
@@ -179,7 +193,7 @@ class Tools:
                 elif any(x in line for x in ["name"]):
                     answers.append("Brian Crane")
 
-            pyperclip.copy(str(answers).replace(",",",\n"))
+            #pyperclip.copy(str(answers).replace(",",",\n"))
             if debug: print("Text: " + str(answers).replace(", ","\n").replace("'",""))
             i = 0
             #Text answers
@@ -205,8 +219,7 @@ class Tools:
 
         text = driver.find_element(By.XPATH, "/html/body").text.lower()
         if "answer this question to continue" in text:
-            print("Please answer required questions!")
-            time.sleep(20)
+            answer = input("Please answer required questions! Any input when done")
 
     def get_all_links(self):
             links = []

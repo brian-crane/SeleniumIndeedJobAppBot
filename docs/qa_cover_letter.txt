@@ -8,6 +8,4 @@ Thank you very much for reading and do not hesitate to reach out if you have any
 -Brian Crane
 briancrane@gmail.com
 
-
-This Job Application was generated using my Selenium automated script, follow development here:
-https://github.com/brian-crane/SeleniumIndeedJobAppBot
+See here for more info: github.com/brian-crane/SeleniumIndeedJobAppBot
